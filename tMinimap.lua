@@ -237,28 +237,66 @@ QuestWatchFrame:SetFrameLevel(1)
 QuestWatchFrame.SetPoint = function() return end
 --end quest tracker
 
---Default locations for buffs
-local buff1 = getglobal("BuffButton0")
-buff1:ClearAllPoints() 
-buff1:SetPoint("TOPRIGHT", "Minimap", "TOPLEFT", -50, 0)
+-- Function to safely set default positions only if not moved by user
+local function SetDefaultPosition(frameName, point, relativeFrame, relativePoint, x, y)
+    local frame = getglobal(frameName)
+    if not frame then return end
+    
+    -- Check if this frame has a saved position from the movable system
+    local hasUserPosition = false
+    if tDFUI_config and tDFUI_config["MoveUnitframesExtended"] and tDFUI_config["MoveUnitframesExtended"][frameName] then
+        hasUserPosition = true
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Found saved position for " .. frameName .. ", skipping default positioning")
+    end
+    
+    -- Only set default position if no user position exists
+    if not hasUserPosition and not frame:IsUserPlaced() then
+        frame:ClearAllPoints()
+        frame:SetPoint(point, relativeFrame, relativePoint, x, y)
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Set default position for " .. frameName)
+    end
+end
 
-local buff2 = getglobal("BuffButton8")
-buff2:ClearAllPoints()
-buff2:SetPoint("TOPRIGHT", "Minimap", "TOPLEFT", -50, -15)
+-- Set default locations for buffs only if not moved by user
+SetDefaultPosition("BuffButton0", "TOPRIGHT", "Minimap", "TOPLEFT", -50, 0)
+SetDefaultPosition("BuffButton8", "TOPRIGHT", "Minimap", "TOPLEFT", -50, -15)
+SetDefaultPosition("TempEnchant1", "TOPRIGHT", "Minimap", "TOPLEFT", -50, -75)
+SetDefaultPosition("BuffButton16", "TOPRIGHT", "Minimap", "TOPLEFT", -50, -120)
 
-local enchant = getglobal("TempEnchant1")
-enchant:ClearAllPoints()
-enchant:SetPoint("TOPRIGHT", "Minimap", "TOPLEFT", -50, -75)
-
-local debuff = getglobal("BuffButton16")
-debuff:ClearAllPoints()
-debuff:SetPoint("TOPRIGHT", "Minimap", "TOPLEFT", -50, -120)
-
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:SetScript("OnEvent", function(self, event, ...)
-    -- Clear any anchors and reassign parent if needed
-    BuffButton16:ClearAllPoints()
-    -- Set new position; adjust values (-200, -200) as you need
-    BuffButton16:SetPoint("TOPRIGHT", "Minimap", "TOPLEFT", -50, -120)
+-- Delayed positioning to ensure frames exist and respect user positions
+local positionFrame = CreateFrame("Frame")
+positionFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+positionFrame:SetScript("OnEvent", function()
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r tMinimap positioning starting...")
+    
+    -- Only set default positions immediately for frames without saved positions
+    SetDefaultPosition("BuffButton0", "TOPRIGHT", "Minimap", "TOPLEFT", -50, 0)
+    SetDefaultPosition("BuffButton8", "TOPRIGHT", "Minimap", "TOPLEFT", -50, -15)  
+    SetDefaultPosition("TempEnchant1", "TOPRIGHT", "Minimap", "TOPLEFT", -50, -75)
+    SetDefaultPosition("BuffButton16", "TOPRIGHT", "Minimap", "TOPLEFT", -50, -120)
+    
+    -- DISABLE further positioning to let movable system handle restoration
+    this:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)
+
+-- Player auras (buffs/debuffs) resize in-UI: CTRL + Mouse Wheel over first buff button
+local function tdf_get_config(key, default)
+    if tDFUI_config and tDFUI_config[key] ~= nil then return tDFUI_config[key] end
+    return default
+end
+
+function tDFUI.ApplyPlayerAuraSize()
+    local size = tdf_get_config("Player Aura Size", 24)
+    for i=0, 31 do
+        local b = getglobal("BuffButton"..i)
+        if b then b:SetWidth(size); b:SetHeight(size) end
+    end
+    for i=1, 2 do
+        local e = getglobal("TempEnchant"..i)
+        if e then e:SetWidth(size); e:SetHeight(size) end
+    end
+end
+
+tDFUI.ApplyPlayerAuraSize()
+
+-- Mouse wheel resizing removed to avoid interfering with scrolling; use DF Options sliders instead

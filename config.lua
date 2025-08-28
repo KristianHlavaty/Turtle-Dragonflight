@@ -212,6 +212,76 @@ settings.load = function(self)
     settings.category[category]:SetPoint("BOTTOMRIGHT", settings.container, "TOPRIGHT", -spacing, -yoff)
   end
 
+  -- Auras section (sliders)
+  do
+    local spacing = 20
+    yoff = yoff + 12
+
+    settings.category = settings.category or {}
+    settings.category["Auras"] = settings.category["Auras"] or CreateFrame("Frame", nil, settings.container)
+    local panel = settings.category["Auras"]
+    panel:SetPoint("TOPLEFT", settings.container, "TOPLEFT", spacing, -yoff)
+    panel:SetBackdrop({
+      bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+      edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+      tile = true, tileSize = 8, edgeSize = 16,
+      insets = { left = 3, right = 3, top = 3, bottom = 3 }
+    })
+    if tDFUI.DarkMode then
+      panel:SetBackdropColor(.1,.1,.1,1)
+      panel:SetBackdropBorderColor(.2,.2,.2,1)
+    else
+      panel:SetBackdropColor(.2,.2,.2,1)
+      panel:SetBackdropBorderColor(.5,.5,.5,1)
+    end
+
+    panel.text = panel.text or panel:CreateFontString(nil, "HIGH", "GameFontHighlightSmall")
+    panel.text:SetText(T["Auras"]) 
+    panel.text:SetPoint("TOPLEFT", 5, 10)
+
+    local function create_slider(name, minv, maxv, step, yoffset, get, set)
+      local s = panel[name]
+      if not s then
+        s = CreateFrame("Slider", "AdvancedSettingsGUI"..name, panel, "OptionsSliderTemplate")
+        panel[name] = s
+      end
+             s:SetPoint("TOPLEFT", panel, "TOPLEFT", 14, -yoffset)
+      s:SetMinMaxValues(minv, maxv)
+      s:SetValueStep(step)
+      _G[s:GetName().."Low"]:SetText(minv)
+      _G[s:GetName().."High"]:SetText(maxv)
+      _G[s:GetName().."Text"]:SetText(name)
+      s:SetValue(get())
+      s:SetScript("OnValueChanged", function()
+        set(this:GetValue())
+      end)
+      return s
+    end
+
+    local function get_cfg(key, default)
+      return (current_config[key] ~= nil and current_config[key]) or (tDFUI_config and tDFUI_config[key]) or default
+    end
+    local function set_cfg(key, value)
+      current_config[key] = value
+      tDFUI_config[key] = value
+    end
+
+    local row = 28
+    create_slider("Player Aura Size", 16, 40, 1, row, function() return get_cfg("Player Aura Size", 24) end, function(v)
+      set_cfg("Player Aura Size", v)
+      if tDFUI.ApplyPlayerAuraSize then tDFUI.ApplyPlayerAuraSize() end
+    end)
+
+    row = row + 45
+    create_slider("Target Aura Size", 12, 36, 1, row, function() return get_cfg("Target Aura Size", 21) end, function(v)
+      set_cfg("Target Aura Size", v)
+      if tDFUI.ApplyTargetAuraSize then tDFUI.ApplyTargetAuraSize() end
+    end)
+
+    yoff = yoff + row + 20
+    panel:SetPoint("BOTTOMRIGHT", settings.container, "TOPRIGHT", -spacing, -yoff)
+  end
+
   -- set container size to required height
   settings.container:SetHeight(yoff)
 
