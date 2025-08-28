@@ -137,7 +137,9 @@ function create_microbutton_eye(parent_frame, x, y)
         end
       end)  
       UpdateTexCoords()
-      LFT:Hide()
+      if LFT then
+        LFT:Hide()
+      end
     end
   end)
   ----------------ANIMATION----------------
