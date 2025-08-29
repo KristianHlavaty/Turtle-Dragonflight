@@ -246,14 +246,14 @@ local function SetDefaultPosition(frameName, point, relativeFrame, relativePoint
     local hasUserPosition = false
     if tDFUI_config and tDFUI_config["MoveUnitframesExtended"] and tDFUI_config["MoveUnitframesExtended"][frameName] then
         hasUserPosition = true
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Found saved position for " .. frameName .. ", skipping default positioning")
+        -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Found saved position for " .. frameName .. ", skipping default positioning")
     end
     
     -- Only set default position if no user position exists
     if not hasUserPosition and not frame:IsUserPlaced() then
         frame:ClearAllPoints()
         frame:SetPoint(point, relativeFrame, relativePoint, x, y)
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Set default position for " .. frameName)
+        -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Set default position for " .. frameName)
     end
 end
 
@@ -267,7 +267,7 @@ SetDefaultPosition("BuffButton16", "TOPRIGHT", "Minimap", "TOPLEFT", -50, -120)
 local positionFrame = CreateFrame("Frame")
 positionFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 positionFrame:SetScript("OnEvent", function()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r tMinimap positioning starting...")
+    -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r tMinimap positioning starting...")
     
     -- Only set default positions immediately for frames without saved positions
     SetDefaultPosition("BuffButton0", "TOPRIGHT", "Minimap", "TOPLEFT", -50, 0)

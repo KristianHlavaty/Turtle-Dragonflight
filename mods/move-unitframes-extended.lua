@@ -80,7 +80,7 @@ module.enable = function(self)
       if name then
         movedb[name] = {left, top}
         -- Debug output
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Saved position for " .. name .. " at " .. left .. ", " .. top)
+        -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Saved position for " .. name .. " at " .. left .. ", " .. top)
       end
     end
   end
@@ -230,24 +230,24 @@ module.enable = function(self)
 
   -- Function to restore positions with error handling
   local function RestorePositions()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Attempting to restore positions...")
+    -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Attempting to restore positions...")
     
     for _, frameName in pairs(nonmovables) do
       -- Wrap each frame restoration in pcall to prevent errors from stopping the process
       local success, errorMsg = pcall(function()
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Checking frame: " .. frameName)
+        -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Checking frame: " .. frameName)
         
         local frame = GetFrameSafely(frameName)
         if frame then
           local name = frame:GetName() or frameName
-          DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Frame exists, name: " .. (name or "nil"))
+          -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Frame exists, name: " .. (name or "nil"))
           
           if name and movedb[name] then
             local savedPos = movedb[name]
-            DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Found saved position: " .. (savedPos[1] or "nil") .. ", " .. (savedPos[2] or "nil"))
+            -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Found saved position: " .. (savedPos[1] or "nil") .. ", " .. (savedPos[2] or "nil"))
             
             if savedPos and savedPos[1] and savedPos[2] then
-              DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Applying position to " .. name)
+              -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Applying position to " .. name)
               frame:ClearAllPoints()
               frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", savedPos[1], savedPos[2])
               
@@ -255,22 +255,22 @@ module.enable = function(self)
               if frameName ~= "MyCustomMinimap" and SupportsUserPlaced(frame) then
                 local userPlacedSuccess = pcall(function() frame:SetUserPlaced(true) end)
                 if not userPlacedSuccess then
-                  DEFAULT_CHAT_FRAME:AddMessage("|cffff0000tDF Debug:|r SetUserPlaced failed for " .. name .. ", but continuing...")
+                  -- DEFAULT_CHAT_FRAME:AddMessage("|cffff0000tDF Debug:|r SetUserPlaced failed for " .. name .. ", but continuing...")
                 end
               end
               
-              DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Successfully restored " .. name .. " to " .. savedPos[1] .. ", " .. savedPos[2])
+              -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Successfully restored " .. name .. " to " .. savedPos[1] .. ", " .. savedPos[2])
             end
           else
-            DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r No saved position for " .. (name or frameName))
+            -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r No saved position for " .. (name or frameName))
           end
         else
-          DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Frame not found: " .. frameName)
+          -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Frame not found: " .. frameName)
         end
       end)
       
       if not success then
-        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000tDF Debug:|r Error restoring " .. frameName .. ": " .. (errorMsg or "unknown error") .. " - continuing with other frames...")
+        -- DEFAULT_CHAT_FRAME:AddMessage("|cffff0000tDF Debug:|r Error restoring " .. frameName .. ": " .. (errorMsg or "unknown error") .. " - continuing with other frames...")
       end
     end
   end
@@ -279,14 +279,14 @@ module.enable = function(self)
   local restoreFrame = CreateFrame("Frame")
   restoreFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
   restoreFrame:SetScript("OnEvent", function()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r PLAYER_ENTERING_WORLD - starting restore sequence")
+    -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r PLAYER_ENTERING_WORLD - starting restore sequence")
     
     -- First immediate restore
     RestorePositions()
     
     -- Delayed restore after 1 frame
     CreateFrame("Frame"):SetScript("OnUpdate", function()
-      DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r First delayed restore")
+      -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r First delayed restore")
       RestorePositions()
       this:SetScript("OnUpdate", nil)
     end)
@@ -296,7 +296,7 @@ module.enable = function(self)
     finalRestore.timer = GetTime() + 3 -- Wait 3 seconds for all frames to be created
     finalRestore:SetScript("OnUpdate", function()
       if GetTime() > this.timer then
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Final delayed restore (3 seconds)")
+        -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Final delayed restore (3 seconds)")
         RestorePositions()
         this:SetScript("OnUpdate", nil)
       end
@@ -307,7 +307,7 @@ module.enable = function(self)
     buffRestore.timer = GetTime() + 5 -- Wait 5 seconds
     buffRestore:SetScript("OnUpdate", function()
       if GetTime() > this.timer then
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Buff-specific restore (5 seconds)")
+        -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Buff-specific restore (5 seconds)")
         -- Only restore buff buttons
         local buffFrames = {"BuffButton0", "BuffButton8", "BuffButton16", "TempEnchant1"}
         for _, frameName in pairs(buffFrames) do
@@ -318,7 +318,7 @@ module.enable = function(self)
               if name and movedb[name] then
                 local savedPos = movedb[name]
                 if savedPos and savedPos[1] and savedPos[2] then
-                  DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Late restoring " .. name .. " to " .. savedPos[1] .. ", " .. savedPos[2])
+                  -- DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Late restoring " .. name .. " to " .. savedPos[1] .. ", " .. savedPos[2])
                   frame:ClearAllPoints()
                   frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", savedPos[1], savedPos[2])
                   if SupportsUserPlaced(frame) then
@@ -329,7 +329,7 @@ module.enable = function(self)
             end
           end)
           if not success then
-            DEFAULT_CHAT_FRAME:AddMessage("|cffff0000tDF Debug:|r Late restore error for " .. frameName .. ": " .. (errorMsg or "unknown"))
+            -- DEFAULT_CHAT_FRAME:AddMessage("|cffff0000tDF Debug:|r Late restore error for " .. frameName .. ": " .. (errorMsg or "unknown"))
           end
         end
         this:SetScript("OnUpdate", nil)
@@ -340,54 +340,54 @@ module.enable = function(self)
   end)
 
   -- Debug command to check saved positions
-  SLASH_TDFDEBUG1 = "/tdfdebug"
-  SlashCmdList["TDFDEBUG"] = function(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Saved positions:")
-    for name, pos in pairs(movedb) do
-      if pos and pos[1] and pos[2] then
-        DEFAULT_CHAT_FRAME:AddMessage("  " .. name .. ": " .. pos[1] .. ", " .. pos[2])
-      end
-    end
-  end
+  -- SLASH_TDFDEBUG1 = "/tdfdebug"
+  -- SlashCmdList["TDFDEBUG"] = function(msg)
+  --   DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Saved positions:")
+  --   for name, pos in pairs(movedb) do
+  --     if pos and pos[1] and pos[2] then
+  --       DEFAULT_CHAT_FRAME:AddMessage("  " .. name .. ": " .. pos[1] .. ", " .. pos[2])
+  --     end
+  --   end
+  -- end
 
   -- Debug command to manually restore positions
-  SLASH_TDFREST1 = "/tdfrestore" 
-  SlashCmdList["TDFREST"] = function(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Manual restore triggered")
-    RestorePositions()
-  end
+  -- SLASH_TDFREST1 = "/tdfrestore" 
+  -- SlashCmdList["TDFREST"] = function(msg)
+  --   DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Manual restore triggered")
+  --   RestorePositions()
+  -- end
 
   -- Debug command to check buff button existence
-  SLASH_TDFCHECK1 = "/tdfcheck"
-  SlashCmdList["TDFCHECK"] = function(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Checking buff button frames...")
-    local buffFrames = {"BuffButton0", "BuffButton8", "BuffButton16", "TempEnchant1"}
-    for _, frameName in pairs(buffFrames) do
-      local frame = GetFrameSafely(frameName)
-      if frame then
-        local name = frame:GetName() or frameName
-        local left, top = frame:GetLeft(), frame:GetTop()
-        DEFAULT_CHAT_FRAME:AddMessage("  " .. frameName .. " -> " .. (name or "nil") .. " at " .. (left or "nil") .. ", " .. (top or "nil"))
-        if movedb[name] then
-          DEFAULT_CHAT_FRAME:AddMessage("    Has saved position: " .. (movedb[name][1] or "nil") .. ", " .. (movedb[name][2] or "nil"))
-        else
-          DEFAULT_CHAT_FRAME:AddMessage("    No saved position")
-        end
-      else
-        DEFAULT_CHAT_FRAME:AddMessage("  " .. frameName .. " -> NOT FOUND")
-      end
-    end
-  end
+  -- SLASH_TDFCHECK1 = "/tdfcheck"
+  -- SlashCmdList["TDFCHECK"] = function(msg)
+  --   DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Checking buff button frames...")
+  --   local buffFrames = {"BuffButton0", "BuffButton8", "BuffButton16", "TempEnchant1"}
+  --   for _, frameName in pairs(buffFrames) do
+  --     local frame = GetFrameSafely(frameName)
+  --     if frame then
+  --       local name = frame:GetName() or frameName
+  --       local left, top = frame:GetLeft(), frame:GetTop()
+  --       DEFAULT_CHAT_FRAME:AddMessage("  " .. frameName .. " -> " .. (name or "nil") .. " at " .. (left or "nil") .. ", " .. (top or "nil"))
+  --       if movedb[name] then
+  --         DEFAULT_CHAT_FRAME:AddMessage("    Has saved position: " .. (movedb[name][1] or "nil") .. ", " .. (movedb[name][2] or "nil"))
+  --       else
+  --         DEFAULT_CHAT_FRAME:AddMessage("    No saved position")
+  --       end
+  --     else
+  --       DEFAULT_CHAT_FRAME:AddMessage("  " .. frameName .. " -> NOT FOUND")
+  --     end
+  --   end
+  -- end
 
   -- Debug command to force save current positions
-  SLASH_TDFSAVE1 = "/tdfsave"
-  SlashCmdList["TDFSAVE"] = function(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Manual save triggered")
-    for _, frameName in pairs(nonmovables) do
-      local frame = GetFrameSafely(frameName)
-      if frame then
-        SavePosition(frame, frameName)
-      end
-    end
-  end
+  -- SLASH_TDFSAVE1 = "/tdfsave"
+  -- SlashCmdList["TDFSAVE"] = function(msg)
+  --   DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00tDF Debug:|r Manual save triggered")
+  --   for _, frameName in pairs(nonmovables) do
+  --     local frame = GetFrameSafely(frameName)
+  --     if frame then
+  --       SavePosition(frame, frameName)
+  --     end
+  --   end
+  -- end
 end
