@@ -336,3 +336,12 @@ end)
 
 GameMenuButtonKeybindings:ClearAllPoints()
 GameMenuButtonKeybindings:SetPoint("TOP", advanced, "BOTTOM", 0, -1)
+
+-- Slash command to open the options window
+SLASH_TDOPTIONS1 = '/tdoptions'
+SlashCmdList.TDOPTIONS = function()
+  if GameMenuFrame:IsShown() then
+    HideUIPanel(GameMenuFrame)
+  end
+  settings:Show()
+end
