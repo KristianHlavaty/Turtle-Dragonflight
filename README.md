@@ -39,7 +39,7 @@ TurtleWoW/
 - Dragonflight MicroMenu
 - Dragonflight Latency Bar
 - Movable Dragonflight XP bar (Green: 150% rested, Blue: Below 150% Rested XP, Purple: Regular XP)
-- For Customization Options, press __Escape__ and navigate to __tDF Options__
+- For Customization Options, press __Escape__ and navigate to __tDF Options__ or type `/tdoptions`
 - Move things with __CTRL + SHIFT__
 
 ## 🐞 Known issues
